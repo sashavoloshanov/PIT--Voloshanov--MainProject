@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="myProcess" name="Внесення змін або продовження терміну дії рішення міської ради" isExecutable="true">
+    <startEvent id="startevent1" name="Start">
+      <extensionElements>
+        <activiti:formProperty id="Region_City" name="Оберіть свій регіон або місто" type="select" default="0" required="true"></activiti:formProperty>
+        <activiti:formProperty id="LastName" name="Прізвище" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="FirstName" name="Ім'я" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="MiddleName" name="По батькові" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="email" name="Електронна пошта" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="phone" name="Номер телефона" type="string" default="+380" required="true"></activiti:formProperty>
+        <activiti:formProperty id="Address" name="Адреса проживання" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="Passport" name="Серія та номер паспорту" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="PassportCopy" name="Сканована копія паспорту; завантажте скановану копію одним файлом формату pdf або архівом zip; " type="file" required="true"></activiti:formProperty>
+        <activiti:formProperty id="IPN" name="Індивідуальний подактовий номер" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="Dani" name="вкажіть дані рішення міської ради щодо якого Ви бажаєте внести зміни (номер, дату та назву)" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="Rishena_Copy" name="Завантажте скановану копію рішення міської ради (в яке необхідно внести зміни);" type="file" required="true"></activiti:formProperty>
+        <activiti:formProperty id="Reason" name="Вкажіть причину внесення змін до рішення" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="DopDoc" name="Завантажте відповідні документи, що підтверджують необхідність внесення змін до рішення." type="file" required="true"></activiti:formProperty>
+        <activiti:formProperty id="Select_Dia" name="Оберіть дію щодо рішення міської ради" type="select" required="true"></activiti:formProperty>
+      </extensionElements>
+    </startEvent>
+    <exclusiveGateway id="exclusivegateway1" name="Чи коректно надана інформація?"></exclusiveGateway>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow5" sourceRef="mailtask1" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow6" sourceRef="mailtask2" targetRef="usertask7"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway2" name="Який результат звернення?"></exclusiveGateway>
+    <sequenceFlow id="flow7" sourceRef="usertask7" targetRef="exclusivegateway2"></sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow9" sourceRef="mailtask4" targetRef="endevent2"></sequenceFlow>
+    <endEvent id="endevent3" name="End"></endEvent>
+    <sequenceFlow id="flow11" sourceRef="mailtask3" targetRef="endevent3"></sequenceFlow>
+    <serviceTask id="mailtask1" name="Повідомлення громадянина про відмову в наданні послу" activiti:type="mail">
+      <extensionElements>
+        <activiti:field name="to">
+          <activiti:expression><![CDATA[${email}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="subject">
+          <activiti:string><![CDATA[Сповіщення про помилку на e-mail]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="from">
+          <activiti:string><![CDATA[noreply@igov.org.ua]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="mailtask2" name="Повідомлення громадянина про розгляд звернення" activiti:type="mail">
+      <extensionElements>
+        <activiti:field name="subject">
+          <activiti:string><![CDATA[Сповіщення про передачу звернення на e-mail]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="to">
+          <activiti:expression><![CDATA[${email}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="from">
+          <activiti:string><![CDATA[noreply@igov.org.ua]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="mailtask3" name="Повідомлення громадянина про підгоовку копії рішення" activiti:type="mail">
+      <extensionElements>
+        <activiti:field name="from">
+          <activiti:string><![CDATA[noreply@igov.org.ua]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="to">
+          <activiti:expression><![CDATA[${email}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="subject">
+          <activiti:string><![CDATA[Відправка e-mail з копіями]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="mailtask4" name="Повідомлення громадянина про відмову в наданні послуг та причини" activiti:type="mail">
+      <extensionElements>
+        <activiti:field name="from">
+          <activiti:string><![CDATA[noreply@igov.org.ua]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="to">
+          <activiti:expression><![CDATA[${email}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="subject">
+          <activiti:string><![CDATA[Відправка e-mail з причиною відхилення]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="mailtask5" name="Повідомлення громадянина  про успішну реєстрацію звернення" activiti:type="mail">
+      <extensionElements>
+        <activiti:field name="to">
+          <activiti:expression><![CDATA[${email}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="from">
+          <activiti:string><![CDATA[noreply@igov.org.ua]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="subject">
+          <activiti:string><![CDATA[Отримання звернення]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <userTask id="usertask6" name="[Етап I] Прийняття рішення щодо реєстрації звернення">
+      <extensionElements>
+        <activiti:formProperty id="Region_City" name="Оберіть свій регіон або місто" type="select" default="0" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="LastName" name="Прізвище" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="FirstName" name="Ім'я" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="MiddleName" name="По батькові" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="email" name="Електронна пошта" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="phone" name="Номер телефона" type="string" default="+380" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Address" name="Адреса проживання" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Passport" name="Серія та номер паспорту" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="PassportCopy" name="Сканована копія паспорту; завантажте скановану копію одним файлом формату pdf або архівом zip; " type="file" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="IPN" name="Індивідуальний подактовий номер" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Dani" name="вкажіть дані рішення міської ради щодо якого Ви бажаєте внести зміни (номер, дату та назву)" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Rishena_Copy" name="Завантажте скановану копію рішення міської ради (в яке необхідно внести зміни);" type="file" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Reason" name="Вкажіть причину внесення змін до рішення" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="DopDoc" name="Завантажте відповідні документи, що підтверджують необхідність внесення змін до рішення." type="file" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Select_Dia" name="Оберіть дію щодо рішення міської ради" type="select" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="decision_1" name="Прийняте рішення щодо надання дозволу" type="enum" required="true">
+          <activiti:value id="accept" name="надати дозвіл"></activiti:value>
+          <activiti:value id="reject" name="відмовити у видачі дозволу"></activiti:value>
+        </activiti:formProperty>
+        <activiti:formProperty id="comment_1" name="У разі відмови внесіть, будь ласка, коментар" type="textArea"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow16" sourceRef="mailtask5" targetRef="usertask6"></sequenceFlow>
+    <sequenceFlow id="flow17" sourceRef="usertask6" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="usertask7" name="[Етап II] Прийняття рішення щодо звернення">
+      <extensionElements>
+        <activiti:formProperty id="Region_City" name="Оберіть свій регіон або місто" type="select" default="0" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="LastName" name="Прізвище" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="FirstName" name="Ім'я" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="MiddleName" name="По батькові" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="email" name="Електронна пошта" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="phone" name="Номер телефона" type="string" default="+380" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Address" name="Адреса проживання" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Passport" name="Серія та номер паспорту" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="PassportCopy" name="Сканована копія паспорту; завантажте скановану копію одним файлом формату pdf або архівом zip; " type="file" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="IPN" name="Індивідуальний подактовий номер" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Dani" name="вкажіть дані рішення міської ради щодо якого Ви бажаєте внести зміни (номер, дату та назву)" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Rishena_Copy" name="Завантажте скановану копію рішення міської ради (в яке необхідно внести зміни);" type="file" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Reason" name="Вкажіть причину внесення змін до рішення" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="DopDoc" name="Завантажте відповідні документи, що підтверджують необхідність внесення змін до рішення." type="file" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="Select_Dia" name="Оберіть дію щодо рішення міської ради" type="select" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="decision_2" name="Прийняте рішення щодо надання дозволу" type="enum" required="true">
+          <activiti:value id="accept" name="надати дозвіл"></activiti:value>
+          <activiti:value id="reject" name="відмовити у видачі дозволу"></activiti:value>
+        </activiti:formProperty>
+        <activiti:formProperty id="comment_2" name="У разі відмови внесіть, будь ласка, коментар" type="textArea"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow18" sourceRef="startevent1" targetRef="mailtask5"></sequenceFlow>
+    <sequenceFlow id="flow19" sourceRef="exclusivegateway1" targetRef="mailtask2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${decision_1=='accept'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow20" sourceRef="exclusivegateway1" targetRef="mailtask1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${decision_1=='reject'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow21" sourceRef="exclusivegateway2" targetRef="mailtask4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${decision_1=='reject'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow22" sourceRef="exclusivegateway2" targetRef="mailtask3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${decision_1=='accept'}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_myProcess">
+    <bpmndi:BPMNPlane bpmnElement="myProcess" id="BPMNPlane_myProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="30.0" y="277.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="460.0" y="274.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="589.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="948.0" y="359.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="1099.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="1099.0" y="580.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="mailtask1" id="BPMNShape_mailtask1">
+        <omgdc:Bounds height="95.0" width="149.0" x="532.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="mailtask2" id="BPMNShape_mailtask2">
+        <omgdc:Bounds height="82.0" width="153.0" x="530.0" y="339.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="mailtask3" id="BPMNShape_mailtask3">
+        <omgdc:Bounds height="131.0" width="141.0" x="1046.0" y="411.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="mailtask4" id="BPMNShape_mailtask4">
+        <omgdc:Bounds height="106.0" width="145.0" x="1044.0" y="228.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="mailtask5" id="BPMNShape_mailtask5">
+        <omgdc:Bounds height="110.0" width="135.0" x="100.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask6" id="BPMNShape_usertask6">
+        <omgdc:Bounds height="110.0" width="145.0" x="270.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask7" id="BPMNShape_usertask7">
+        <omgdc:Bounds height="89.0" width="139.0" x="742.0" y="335.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="606.0" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="606.0" y="135.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="683.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="379.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="881.0" y="379.0"></omgdi:waypoint>
+        <omgdi:waypoint x="948.0" y="379.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="1116.0" y="228.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1116.0" y="205.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="1116.0" y="542.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1116.0" y="580.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="235.0" y="295.0"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="295.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="415.0" y="295.0"></omgdi:waypoint>
+        <omgdi:waypoint x="460.0" y="294.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="65.0" y="294.0"></omgdi:waypoint>
+        <omgdi:waypoint x="100.0" y="295.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="480.0" y="314.0"></omgdi:waypoint>
+        <omgdi:waypoint x="606.0" y="339.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="480.0" y="274.0"></omgdi:waypoint>
+        <omgdi:waypoint x="606.0" y="255.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
+        <omgdi:waypoint x="968.0" y="359.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1116.0" y="334.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
+        <omgdi:waypoint x="968.0" y="399.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1116.0" y="411.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
